@@ -9,7 +9,7 @@ import numpy as np
 def tomtom_api_params():
     # Get the API key from the .env
     load_dotenv()
-    API_KEY = os.getenv("API-KEY-TOMTOM")
+    API_KEY = os.getenv("API_KEY_TOMTOM")
 
     # Export the function parameters for the tomtom api
     api_params_incidents = {
