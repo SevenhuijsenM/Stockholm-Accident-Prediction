@@ -143,6 +143,7 @@ def load_or_create_incidents_csv():
 # The main for loop that runs every sleeps for 5 minutes between iteration
 if __name__ == '__main__':
     api_params_incidents = tomtom_api_params()     # Get the api parameters
+    print(api_params_incidents)
     api_params_weather = weather_api_params()      # Get the weather api parameters
     frequency_api_call_minutes = 2              # Define how often the API is called   
     data_collection_period_minutes = 60         # Data collection period in minutes
