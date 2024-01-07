@@ -26,4 +26,4 @@ jobs:
         env: 
           HOPSWORKS_API_KEY: ${{ secrets.HOPSWORKS_API_KEY }}
           WEATHER_API_KEY: ${{secrets.WEATHER_API_KEY}}
-        run: ./inference/sthlm_incident-inference-daily.sh
+        run: ./inference/run-daily.sh
