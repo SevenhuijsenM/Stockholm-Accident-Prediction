@@ -9,7 +9,73 @@ import requests
 import json
 import pandas as pd
 import time
-from helper import tomtom_api_params, get_weather_data, weather_api_params
+from dotenv import load_dotenv
+
+# A function that gets the weeather API parameters
+def weather_api_params():
+    # Get the api key from the .env
+    load_dotenv()
+    API_KEY = os.getenv("WEATHER_API_KEY")
+
+    api_params = {
+        'API_KEY': API_KEY,
+        'city': 'Stockholm',
+        'country': 'Sweden',
+    }
+
+    api_params['url'] = f"http://api.openweathermap.org/data/2.5/weather?q={api_params['city']}&appid={api_params['API_KEY']}"
+
+    return api_params
+    
+# Function to make a request getting weather data
+def get_weather_data(params):
+    response = requests.get(params['url'])
+    res = response.json()
+    
+    # Check if the city is found or not
+    if res["cod"] != "404":
+        data = res["main"]
+    
+        # Storing the live temperature data
+        live_temperature = data["temp"]
+        
+        # Storing the live pressure data
+        live_pressure = data["pressure"]
+        desc = res["weather"]
+        
+        # Storing the weather description
+        weather_description = desc[0]["description"]
+
+        # Return the weather data
+        return {'temperature': live_temperature, 'pressure': live_pressure, 'weather_description': weather_description }
+    else:
+        print("There was an error with the request")
+
+        # Throw an error
+        sys.exit(1)
+
+# A function that exports the TOMTOM api parameters
+def tomtom_api_params():
+    # Get the API key from the .env
+    load_dotenv()
+    API_KEY = os.getenv("API-KEY-TOMTOM")
+
+    # Export the function parameters for the tomtom api
+    api_params_incidents = {
+        'base_url': 'api.tomtom.com',
+        'API_KEY': API_KEY,
+        'min_lon': 18.00,
+        'max_lon': 18.16,
+        'min_lat': 59.25,
+        'max_lat': 59.40,
+        'version_number': 5,
+        'time_validity_filter': 'present',
+        'category_filter': '0%2C1%2C2%2C3%2C4%2C5%2C6%2C7%2C8%2C9%2C10%2C11%2C14',
+        'language': 'en-GB',
+        'fields': '%7Bincidents%7Btype%2Cgeometry%7Bcoordinates%7D%2Cproperties%7Bid%2CmagnitudeOfDelay%2Cevents%7Bdescription%2Ccode%2CiconCategory%7D%2CstartTime%2CendTime%7D%7D%7D'
+    }
+
+    return api_params_incidents
 
 
 # Function to make  a request getting the incident details
