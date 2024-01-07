@@ -10,6 +10,7 @@ import json
 import pandas as pd
 import time
 from dotenv import load_dotenv
+import sys
 
 # A function that gets the weeather API parameters
 def weather_api_params():
@@ -81,6 +82,8 @@ def tomtom_api_params():
 # Function to make  a request getting the incident details
 def get_incident_details(params):
     url = f"https://{params['base_url']}/traffic/services/{params['version_number']}/incidentDetails?bbox={params['min_lon']}%2C{params['min_lat']}%2C{params['max_lon']}%2C{params['max_lat']}&fields={params['fields']}&language={params['language']}&categoryFilter={params['category_filter']}&timeValidityFilter={params['time_validity_filter']}&key={params['API_KEY']}"
+    print(requests.get(url).text)
+    print(params['API_KEY'])
     return json.loads(requests.get(url).text)
     
 # Function that updates the incidents csv with a single row
