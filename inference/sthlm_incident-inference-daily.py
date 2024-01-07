@@ -78,7 +78,6 @@ def tomtom_api_params():
 
     return api_params_incidents
 
-
 # Function to make  a request getting the incident details
 def get_incident_details(params):
     url = f"https://{params['base_url']}/traffic/services/{params['version_number']}/incidentDetails?bbox={params['min_lon']}%2C{params['min_lat']}%2C{params['max_lon']}%2C{params['max_lat']}&fields={params['fields']}&language={params['language']}&categoryFilter={params['category_filter']}&timeValidityFilter={params['time_validity_filter']}&key={params['API_KEY']}"
