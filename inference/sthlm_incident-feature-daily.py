@@ -1,4 +1,4 @@
-# This file is used to get training data. A list of activate IDs is listed, and each 5 minutes the API fetches data
+# This file is used to get training data. A list of activate IDs is listed, and each 2 minutes the API fetches data
 # From the tom tom API and gets all necessary information. A running list is updated that contains all the 
 # active ids, if an id is not active anymore (not in the fetched data) then it is removed from the list and added to a csv file
 # This way we have an approximate end date
@@ -11,6 +11,8 @@ import pandas as pd
 import time
 from dotenv import load_dotenv
 import sys
+import hopsworks
+import pandas as pd
 
 # A function that gets the weeather API parameters
 def weather_api_params():
@@ -90,8 +92,6 @@ def add_row_to_incidents_csv(row, df_incidents):
     
     # merge the df_row with the df_incidents
     df_incidents = pd.concat([df_incidents, df_row])
-    
-    df_incidents.to_csv('incidents.csv')
     return df_incidents
     
 # Function that handles an incident
@@ -138,9 +138,12 @@ def load_or_create_incidents_csv():
 
 # The main for loop that runs every sleeps for 5 minutes between iteration
 if __name__ == '__main__':
+    project = hopsworks.login()
+    fs = project.get_feature_store()
+
     api_params_incidents = tomtom_api_params()     # Get the api parameters
     api_params_weather = weather_api_params()      # Get the weather api parameters
-    frequency_api_call_minutes = 2              # Define how often the API is called   
+    frequency_api_call_minutes = 2              # Define how often the API is called
     data_collection_period_minutes = 60         # Data collection period in minutes
     iterations = int(data_collection_period_minutes / frequency_api_call_minutes)
     
@@ -148,14 +151,14 @@ if __name__ == '__main__':
     df_incidents = load_or_create_incidents_csv()
     
     # Get a list of all the active ids
-    df_incident_indices = df_incidents.index.tolist()        
+    df_incident_indices = df_incidents.index.tolist()
 
     # A dictionary of active IDs
     active_ids = {}
     
     # iteration count
     i = 0
-    
+
     while(i < iterations):
         # Make a request to get the incident details
         print(f"Getting incident details at time {time.strftime('%Y-%m-%dT%H:%M:%SZ', time.localtime())}")
@@ -206,3 +209,7 @@ if __name__ == '__main__':
         # Sleep until the next iteration
         i += 1
         time.sleep(frequency_api_call_minutes * 60)
+    
+    # Save the incidents to the feature group
+    incidents_fg = fs.get_feature_group("sthlm_incidents")
+    incidents_fg.insert(df_incidents)

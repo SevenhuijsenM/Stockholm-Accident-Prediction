@@ -1,1 +1,1 @@
-python inference/sthlm_incident-inference-daily.py
+python inference/sthlm_incident-inference-feature.py
