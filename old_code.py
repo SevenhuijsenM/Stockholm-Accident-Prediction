@@ -1,40 +1,23 @@
-# The position of Stockholm
-lon = 18.0687
-lat = 59.3294
+from dotenv import load_dotenv
+import os 
+from helper import get_incident_details
 
-# Get the different dates in the dataset
-dates = df_no_weather['date'].unique()
+load_dotenv()
+API_KEY = os.getenv("API_KEY_TOMTOM")
 
-# Remove the nan values
-dates = [date for date in dates if date == date]
-dates = [date[0:10] for date in dates]
+api_params_incidents = {
+        'base_url': 'api.tomtom.com',
+        'API_KEY': API_KEY,
+        'min_lon': 18.00,
+        'max_lon': 18.16,
+        'min_lat': 59.25,
+        'max_lat': 59.40,
+        'version_number': 5,
+        'time_validity_filter': 'present',
+        'category_filter': '0%2C1%2C2%2C3%2C4%2C5%2C6%2C7%2C8%2C9%2C10%2C11%2C14',
+        'language': 'en-GB',
+        'fields': '%7Bincidents%7Btype%2Cgeometry%7Bcoordinates%7D%2Cproperties%7Bid%2CmagnitudeOfDelay%2Cevents%7Bdescription%2Ccode%2CiconCategory%7D%2CstartTime%2CendTime%7D%7D%7D'
+    }
 
-# Interchange the month and day
-#dates = [date[0:4] + '-' + date[8:10] + '-' + date[5:7] for date in dates]
+print(get_incident_details(api_params_incidents, 1705069120))
 
-# remove duplicates
-dates = list(set(dates))
-print(dates)
-
-# A dictionary that for each day contains the weather data
-weather_data = {}
-for date in dates:
-    # Weather data for the current date
-    hourly_weather = handle_weather_data(get_weather_data(lon, lat, date))
-    
-    # Add the weather data to the dictionary
-    weather_data[date] = hourly_weather
-
-# For each incident apply the weather data
-for index, row in df_no_weather.iterrows():   
-    # Get the weather data for the current date
-    hourly_weather = weather_data[row['date'][0:10]]
-    
-    # Get the weather data for the current time
-    weather_data_current_time = hourly_weather[hourly_weather['hour'] == row['time']]
-    
-    # Get the weather code
-    weather_code = weather_data_current_time['weather_code'].values[0]
-    
-    # Update the dataframe
-    df_no_weather.at[index, 'weather_code'] = weather_code

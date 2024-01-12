@@ -193,23 +193,23 @@ if __name__ == '__main__':
                 
                 # Add the incident to df_incident_indices
                 df_incident_indices.append(id)
-                
+     
         # Update the active_ids
         active_ids = new_active_ids.copy()
-        
+
         # remove all the incidents that are already active
         incidents = [incident for incident in incidents if incident['properties']['id'] not in active_ids]
-                        
+                   
         # If there are any incidents left then they are new incidents
         for incident in incidents:
             # Add the incident to the active_ids
             active_ids[incident['properties']['id']] = handle_incident(incident, weather_data)
             print(f"ID {incident['properties']['id']} is now active")
-        
+ 
         # Sleep until the next iteration
         i += 1
         time.sleep(frequency_api_call_minutes * 60)
-    
+
     # Save the incidents to the feature group
     incidents_fg = fs.get_feature_group("sthlm_incidents")
     incidents_fg.insert(df_incidents)
